@@ -1,7 +1,6 @@
 
 ### 2. `main.py`
 
-```python
 """
 Assignment: Implement the most efficient algorithm to solve the given problem.
 
@@ -22,26 +21,58 @@ Returns:
 - int: The length of the longest path in the graph.
 
 Example:
->>> graph = [
-...     [(1, 3), (2, 2)],
-...     [(3, 4)],
-...     [(3, 1)],
-...     []
-... ]
->>> longest_path(graph)
-7
 """
+
+
+
 
 def longest_path(graph: list) -> int:
     # Your implementation goes here
-    pass
+    topo_sort = topological_sort(graph);
+    return calculate_longest_path(graph, topo_sort);
 
 # Helper function to perform topological sort
 def topological_sort(graph):
     # Your implementation goes here
-    pass
+    from collections import deque
+
+    n = len(graph);
+    visited=[0]*n
+    indeg=[0]*n
+    res=[]
+    q=deque()
+    
+    for i in range(n) :
+        for j,w in graph[i]:
+            indeg[j]+=1
+    
+    for i in range(n) :
+        if indeg[i]==0:
+            q.append(i);
+
+    while q:
+        u=q.popleft()
+        res.append(u)
+        for i,w in graph[u]:
+            indeg[i]-=1
+            if indeg[i]==0:
+                q.append(i)
+    
+    return res
 
 # Function to calculate longest path using topological sort
 def calculate_longest_path(graph, topo_order):
-    # Your implementation goes here
-    pass
+    n = len(graph);
+    dist = [-float('inf')] * n
+
+    for i in range(len(topo_order)):
+        if topo_order[i]==0:
+            dist[i]=0
+
+    for u in topo_order:
+        if dist[u]!= -float('inf'):
+            for v, wt in graph[u]:
+                if dist[u] + wt > dist[v]:
+                    dist[v] = wt + dist[u]
+    
+    return max(dist)
